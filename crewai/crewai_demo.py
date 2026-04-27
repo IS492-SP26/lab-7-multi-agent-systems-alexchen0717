@@ -298,6 +298,19 @@ def create_itinerary_agent(destination: str, trip_duration: str):
     )
 
 
+
+def create_local_expert_agent(destination: str):
+    """Create the Local Expert agent."""
+    return Agent(
+        role='Local Expert',
+        goal=f'Provide insider tips, local customs, safety info, and hidden gems for {destination}.',
+        backstory='You are a local expert who has lived in the destination for years. '
+                  'You know the best local restaurants, cultural customs, safety tips, '
+                  'and money-saving tricks that only locals know.',
+        verbose=True,
+        allow_delegation=False
+    )
+
 def create_budget_agent(destination: str):
     """Create the Financial Advisor agent with real cost research tools."""
     return Agent(
@@ -464,6 +477,7 @@ def main(destination: str = "Iceland", trip_duration: str = "5 days",
     itinerary_agent = create_itinerary_agent(destination, trip_duration)
 
     print("[4/4] Creating Financial Advisor Agent (analyzes real costs)...")
+    local_expert_agent = create_local_expert_agent(destination)
     budget_agent = create_budget_agent(destination)
 
     print("\n✅ All agents created successfully!")
@@ -474,6 +488,7 @@ def main(destination: str = "Iceland", trip_duration: str = "5 days",
     flight_task = create_flight_task(flight_agent, destination, trip_dates, departure_city)
     hotel_task = create_hotel_task(hotel_agent, destination, trip_dates)
     itinerary_task = create_itinerary_task(itinerary_agent, destination, trip_duration, trip_dates)
+        local_expert_task = create_local_expert_task(local_expert_agent, destination)
     budget_task = create_budget_task(budget_agent, destination, trip_duration)
 
     print("Tasks created successfully!")
@@ -485,8 +500,8 @@ def main(destination: str = "Iceland", trip_duration: str = "5 days",
     print()
 
     crew = Crew(
-        agents=[flight_agent, hotel_agent, itinerary_agent, budget_agent],
-        tasks=[flight_task, hotel_task, itinerary_task, budget_task],
+        agents=[flight_agent, hotel_agent, itinerary_agent, local_expert_agent, budget_agent],
+        tasks=[flight_task, hotel_task, itinerary_task, local_expert_task, budget_task],
         verbose=True,
         process="sequential"  # Sequential task execution
     )
